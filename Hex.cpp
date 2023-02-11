@@ -61,4 +61,3 @@ void Hex::setPtr(int dir, Hex* ptr)
 		break;
 	}
 }
-
