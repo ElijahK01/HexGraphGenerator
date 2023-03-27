@@ -33,7 +33,7 @@ Hex* Hex::getPtr(int dir)
 	case 6:
 		return ptrVI;
 	default:
-		return 0;
+		return nullptr;
 	}
 }
 

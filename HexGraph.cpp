@@ -8,77 +8,96 @@ using namespace std;
 
 int width;
 int height;
+int size;
 
 Hex* parentHex;
 vector<Hex*> hexList;
 
 HexGraph::HexGraph() : width(0), height(0){}
 
+
+// position checks
+
+bool HexGraph::isNodeOnLeftmostColumn(int pos, int h){return pos - h < 0;}
+
+bool HexGraph::isNodeOnRightmostColumn(int pos, int h, int w){return pos + h >= (w * h);}
+
+bool HexGraph::isNodeOnTopOfColumn(int pos, int h){return (pos % h) == 0;}
+
+bool HexGraph::isNodeOnBottomOfColumn(int pos, int h){return(isNodeOnTopOfColumn(pos + 1, h));}
+
+bool HexGraph::isNodeInEvenColumn(int pos, int h){return (pos / h) % 2 == 0;}
+
+
+
 HexGraph::HexGraph(int width, int height) : width(width), height(height)
 {
+	size = width * height;
 	this->GenerateGraph();
 }
 
 void HexGraph::GenerateGraph() 
 {
-	Hex* firstHex = new Hex();
-	this->parentHex = firstHex;
-	hexList.push_back(firstHex);
-
-	Hex* currentHex = firstHex;
-	Hex* prevHex = firstHex;
-	Hex* colHeaderHex = firstHex;
-
-	// create vertical col of hexes
-	for (int i = 1; i < height; i++)
-	{
-		currentHex->setPtr(4, new Hex());
-		currentHex->getPtr(4)->setPtr(1, currentHex);
-
-		currentHex = currentHex->getPtr(4);
-	}
-
-	currentHex = firstHex;
+	const int SIZE = this->width * this->height;
 	
-
-	// go through columns adding adjacent hex
-	while (currentHex)
+	for(int i = 0; i < SIZE; i++)
 	{
-		cout << "At Hex " << currentHex << endl;
-
-		currentHex->setPtr(firstLinkDir(1), new Hex());									// set first link direction
-		currentHex->getPtr(firstLinkDir(1))->setPtr(firstLinkDir(1) + 3, currentHex);	// set link back
-
-		prevHex = currentHex;
-		currentHex = currentHex->getPtr(4);
+		hexList.push_back(new Hex());
 	}
 
-	// add second adj link to node (reverse direction)
-	currentHex = colHeaderHex;
-	while (currentHex->getPtr(4))
+	for (int i = 0; i < SIZE; i++)
 	{
-		cout << "At Hex " << currentHex << endl;
-
-		pair<int, int> p = secondLinkDirs(1);
-		currentHex->getPtr(p.first)->setPtr(5, currentHex->getPtr(p.second)); // link second step
-		currentHex->getPtr(p.second)->setPtr(2, currentHex->getPtr(p.first));
-
-		prevHex = currentHex;
-		currentHex = currentHex->getPtr(4);
-	}
-	
-	currentHex = colHeaderHex->getPtr(4); // col dependant
-
-	while (currentHex)
-	{
-		currentHex->getPtr(2)->setPtr(4, currentHex->getPtr(3));
-		currentHex->getPtr(3)->setPtr(1, currentHex->getPtr(2));
-
-		currentHex = currentHex->getPtr(4);
+		makeConnections(hexList.at(i), i);
 	}
 
-	// works for 1 column
+	this->parentHex = hexList.at(0);
 }
+
+void HexGraph::makeConnections(Hex* h, int pos)
+{
+	bool isTop = isNodeOnTopOfColumn(pos, this->height);
+	bool isBottom = isNodeOnBottomOfColumn(pos, this->height);
+	bool isRightMost = isNodeOnRightmostColumn(pos, this->height, this->width);
+	bool isLeftMost = isNodeOnLeftmostColumn(pos, this->height);
+	bool evenCol = isNodeInEvenColumn(pos, this->height);
+
+	// up connection
+	if (!isTop)
+	{
+		h->setPtr(1, hexList.at(pos - 1));
+	}
+
+	// down connection
+	if (!isBottom)
+	{
+		h->setPtr(4, hexList.at(pos + 1));
+	}
+
+	// up_right
+	if ((!isRightMost) && !(isTop && evenCol))
+	{
+		h->setPtr(2, hexList.at((pos + this->height) - evenCol));
+	}
+
+	// down_right
+	if ((!isRightMost) && !(isBottom && !evenCol))
+	{
+		h->setPtr(3, hexList.at((pos + this->height) + !evenCol));
+	}
+
+	// up_left
+	if ((!isLeftMost) && !(isTop && evenCol))
+	{
+		h->setPtr(6, hexList.at((pos - this->height) - evenCol));
+	}
+
+	// down_left
+	if ((!isLeftMost) && !(isBottom && !evenCol))
+	{
+		h->setPtr(5, hexList.at((pos - this->height) + !evenCol));
+	}
+}
+
 void HexGraph::SetDimensions(int width, int height)
 {
 	this->width = width;
@@ -124,26 +143,28 @@ void HexGraph::createHex(int dir, Hex* parentPtr)
 	child.setPtr(dir, &parent);
 }
 
-int HexGraph::firstLinkDir(int colNum)
+Hex* HexGraph::getParentHex()
 {
-	if (colNum % 2 == 1)
-		return 3;
-	else
-		return 2;
+	return parentHex;
 }
 
-pair<int, int> HexGraph::secondLinkDirs(int colNum)
+Hex* HexGraph::getHexAt(int i)
 {
-	if (colNum % 2 == 1)
-		return make_pair(3, 4);
-	else
-		return make_pair(2, 1);
+	return hexList.at(i);
 }
-
-int HexGraph::nextNodeDir(int colNum)
+Hex* HexGraph::getHexAt(int x, int y)
 {
-	if (colNum % 2 == 1)
-		return 4;
-	else
-		return 1;
+	return hexList.at((x * this->height + y));
+}
+int HexGraph::getSize()
+{
+	return this->size;
+}
+int HexGraph::getWidth()
+{
+	return this->width;
+}
+int HexGraph::getHeight()
+{
+	return this->height;
 }
