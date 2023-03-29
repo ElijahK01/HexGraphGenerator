@@ -26,10 +26,9 @@ private:
 
 	Hex* parentHex;
 	vector<Hex*> hexList;
-
-	void createHex(int dir, Hex* parentPtr);
 	void makeConnections(Hex* h, int n);
 
+	// checks position attributes of hex
 	bool isNodeOnLeftmostColumn(int pos, int h);
 	bool isNodeOnRightmostColumn(int pos, int h, int w);
 	bool isNodeOnTopOfColumn(int pos, int h);

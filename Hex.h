@@ -10,7 +10,9 @@ class Hex
 		Hex* getSelfPtr();
 		Hex* getPtr(int dir);
 		void setPtr(int dir, Hex* ptr);
+
 	private:
+		// direction pointers
 		Hex* ptrI;
 		Hex* ptrII;
 		Hex* ptrIII;

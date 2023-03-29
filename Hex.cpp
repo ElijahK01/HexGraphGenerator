@@ -3,12 +3,12 @@
 
 using namespace std;
 
-Hex* ptrI;
-Hex* ptrII;
-Hex* ptrIII;
-Hex* ptrIV;
-Hex* ptrV;
-Hex* ptrVI;
+Hex* ptrI;   // up
+Hex* ptrII;  // up right
+Hex* ptrIII; // down right
+Hex* ptrIV;  // down
+Hex* ptrV;   // down left
+Hex* ptrVI;  // up left
 
 vector<int> edgeLengths;
 
@@ -16,6 +16,7 @@ Hex* Hex::getSelfPtr()
 {
 	return this;
 }
+
 Hex* Hex::getPtr(int dir)
 {
 	switch (dir)

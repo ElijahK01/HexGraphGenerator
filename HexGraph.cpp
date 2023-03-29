@@ -1,3 +1,4 @@
+// imports
 #include "HexGraph.h"
 #include "Hex.h"
 #include <vector>
@@ -6,6 +7,7 @@
 
 using namespace std;
 
+// class variables
 int width;
 int height;
 int size;
@@ -29,11 +31,18 @@ bool HexGraph::isNodeOnBottomOfColumn(int pos, int h){return(isNodeOnTopOfColumn
 bool HexGraph::isNodeInEvenColumn(int pos, int h){return (pos / h) % 2 == 0;}
 
 
+// initializing and attribute functions
 
 HexGraph::HexGraph(int width, int height) : width(width), height(height)
 {
 	size = width * height;
 	this->GenerateGraph();
+}
+
+void HexGraph::SetDimensions(int width, int height)
+{
+	this->width = width;
+	this->height = height;
 }
 
 void HexGraph::GenerateGraph() 
@@ -52,6 +61,9 @@ void HexGraph::GenerateGraph()
 
 	this->parentHex = hexList.at(0);
 }
+
+
+// internal housekeeping functions
 
 void HexGraph::makeConnections(Hex* h, int pos)
 {
@@ -98,11 +110,8 @@ void HexGraph::makeConnections(Hex* h, int pos)
 	}
 }
 
-void HexGraph::SetDimensions(int width, int height)
-{
-	this->width = width;
-	this->height = height;
-}
+
+// public return functions
 
 Hex* HexGraph::returnHexRelative(Hex* base, vector<int> path)
 {
@@ -119,28 +128,6 @@ Hex* HexGraph::returnHexRelative(Hex* base, vector<int> path)
 Hex* HexGraph::returnHexAbsolute(vector<int> path)
 {
 	return returnHexRelative(parentHex, path);
-}
-
-void HexGraph::createHex(int dir, Hex* parentPtr)
-{
-	Hex parent = *parentPtr;
-	Hex child = Hex();
-
-	hexList.push_back(&child);
-
-	parent.setPtr(dir, &child);
-	
-	// set direction to opposite (hexagon = 6  sides, 1/2 of 6 is 3)
-	if (dir - 3 > 0)
-	{
-		dir -= 3;
-	}
-	else
-	{
-		dir += 3;
-	}
-
-	child.setPtr(dir, &parent);
 }
 
 Hex* HexGraph::getParentHex()
