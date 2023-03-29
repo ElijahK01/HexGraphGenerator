@@ -2,8 +2,6 @@
 #include "HexGraph.h"
 #include "Hex.h"
 #include <vector>
-#include <iostream>
-#include <string>
 
 using namespace std;
 

@@ -1,4 +1,3 @@
-#include <string>
 #include <vector>
 #include "HexGraph.h"
 #include "Hex.h"
